@@ -8,7 +8,7 @@ public class UserDAO {
     static {
         // 确保表已创建
         try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement stmt = conn.createStatement()) {
+                Statement stmt = conn.createStatement()) {
             String createTable = "CREATE TABLE IF NOT EXISTS users (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "username TEXT UNIQUE NOT NULL," +
@@ -20,10 +20,25 @@ public class UserDAO {
         }
     }
 
+    public String getUserRole(String username) {
+        String sql = "SELECT role FROM users WHERE username=?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("role");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean registerUser(String username, String password, String role) {
         String sql = "INSERT INTO users (username, password, role) VALUES (?,?,?)";
         try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, username);
             pstmt.setString(2, password);
@@ -40,8 +55,8 @@ public class UserDAO {
     public boolean validateLogin(String username, String password) {
         String sql = "SELECT * FROM users WHERE username=? AND password=?";
         try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             ResultSet rs = pstmt.executeQuery();

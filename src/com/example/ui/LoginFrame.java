@@ -3,6 +3,11 @@ package com.example.ui;
 import com.example.dao.UserDAO;
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class LoginFrame extends JFrame {
 
@@ -38,7 +43,9 @@ public class LoginFrame extends JFrame {
         titleLabel.setForeground(new Color(50, 50, 50));
         topPanel.add(titleLabel, BorderLayout.NORTH);
 
-        JLabel infoLabel = new JLabel("<html><div style='text-align: center;'>网络安全为人民，网络安全靠人民<br>遵守法律法规，共建和谐校园环境</div></html>", SwingConstants.CENTER);
+        JLabel infoLabel = new JLabel(
+                "<html><div style='text-align: center;'>网络安全为人民，网络安全靠人民<br>遵守法律法规，共建和谐校园环境</div></html>",
+                SwingConstants.CENTER);
         infoLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         infoLabel.setForeground(new Color(80, 80, 80));
         topPanel.add(infoLabel, BorderLayout.CENTER);
@@ -66,14 +73,16 @@ public class LoginFrame extends JFrame {
         passwordField = new JPasswordField(15);
         passwordField.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         formPanel.add(userLabel, gbc);
-        gbc.gridx = 1; 
+        gbc.gridx = 1;
         formPanel.add(usernameField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         formPanel.add(passLabel, gbc);
-        gbc.gridx = 1; 
+        gbc.gridx = 1;
         formPanel.add(passwordField, gbc);
 
         // 底部按钮区
@@ -94,14 +103,32 @@ public class LoginFrame extends JFrame {
     }
 
     private void handleLogin() {
-        String username = usernameField.getText();
-        String password = new String(passwordField.getPassword());
+
+        String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword()).trim();
+
+        UserDAO userDAO = new UserDAO();
         boolean valid = userDAO.validateLogin(username, password);
         if (valid) {
-            JOptionPane.showMessageDialog(this, "登录成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
+            // 获取角色
+            String role = userDAO.getUserRole(username);
+            System.out.println("用户角色：" + role); // 调试用，确保角色不为 null
+
+            if ("admin".equalsIgnoreCase(role)) {
+                // 管理员进入公告发布页面
+                new AnnouncementFrame().setVisible(true);
+            } else {
+                // 普通用户进入公告查看页面
+                new AnnouncementViewFrame().setVisible(true);
+            }
+            System.out.println("登录成功，用户名：" + username + "，角色：" + role);
         } else {
             JOptionPane.showMessageDialog(this, "用户名或密码错误！", "错误", JOptionPane.ERROR_MESSAGE);
         }
+
+        // 关闭当前登录窗口
+        this.dispose();
+
     }
 
     private void openRegisterFrame() {
