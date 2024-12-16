@@ -1,6 +1,6 @@
-package com.example.ui;
+package release.ui;
 
-import com.example.dao.DeviceDAO;
+import release.dao.DeviceDAO;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,6 +1,6 @@
-package com.example.ui;
+package release.ui;
 
-import com.example.dao.AnnouncementDAO;
+import release.dao.AnnouncementDAO;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;

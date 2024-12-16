@@ -1,6 +1,6 @@
-package com.example;
+package release;
 
-import com.example.ui.LoginFrame;
+import release.ui.LoginFrame;
 
 import javax.swing.*;
 
